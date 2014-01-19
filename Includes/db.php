@@ -9,6 +9,7 @@ class WishDB extends mysqli {
     private $pass = "phpuserpw";
     private $dbName = "wishlist";
     private $dbHost = "localhost";
+    private $con = null;
 
     //This method must be static, and must return an instance of the object if the object
     //does not already exist.
@@ -40,16 +41,14 @@ class WishDB extends mysqli {
     }
 
     public function get_wisher_id_by_name($name) {
-
         $name = $this->real_escape_string($name);
-
         $wisher = $this->query("SELECT id FROM wishers WHERE name = '"
-                . $name . "'");
+                        . $name . "'");
+
         if ($wisher->num_rows > 0) {
             $row = $wisher->fetch_row();
             return $row[0];
-        }
-        else
+        } else
             return null;
     }
 
@@ -60,18 +59,36 @@ class WishDB extends mysqli {
     public function create_wisher($name, $password) {
         $name = $this->real_escape_string($name);
         $password = $this->real_escape_string($password);
-        $this->query("INSERT INTO wishers (name, password) VALUES ('" . $name . "', '" . $password . "')");
+        $this->query("INSERT INTO wishers (name, password) VALUES ('" . $name
+                . "', '" . $password . "')");
     }
 
     public function verify_wisher_credentials($name, $password) {
         $name = $this->real_escape_string($name);
-
         $password = $this->real_escape_string($password);
-        $result = $this->query("SELECT 1 FROM wishers
- 	           WHERE name = '" . $name . "' AND password = '" . $password . "'");
+        $result = $this->query("SELECT 1 FROM wishers WHERE name = '"
+                        . $name . "' AND password = '" . $password . "'");
         return $result->data_seek(0);
     }
 
-}
+    function insert_wish($wisherID, $description, $duedate) {
+        $description = $this->real_escape_string($description);
+        if ($this->format_date_for_sql($duedate)==null){
+           $this->query("INSERT INTO wishes (wisher_id, description)" .
+                " VALUES (" . $wisherID . ", '" . $description . "')");
+        } else
+        $this->query("INSERT INTO wishes (wisher_id, description, due_date)" .
+                " VALUES (" . $wisherID . ", '" . $description . "', "
+                . $this->format_date_for_sql($duedate) . ")");
+    }
 
-?>
+    function format_date_for_sql($date) {
+        if ($date == "")
+            return null;
+        else {
+            $dateParts = date_parse($date);
+            return $dateParts["year"] * 10000 + $dateParts["month"] * 100 + $dateParts["day"];
+        }
+    }
+
+}

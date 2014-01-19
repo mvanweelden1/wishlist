@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <body>
-        Wish List of <?php echo $_GET['user']."<br/>";?>
+        Wish List of <?php echo $_GET['user'] . "<br/>"; ?>
         <?php
         require_once("Includes/db.php");
-        
+
         $wisherID = WishDB::getInstance()->get_wisher_id_by_name($_GET['user']);
         if (!$wisherID) {
-            exit("The person " .$_GET['user']. " is not found. Please check the spelling and try again" );
+            exit("The person " . $_GET['user'] . " is not found. Please check the spelling and try again");
         }
         ?>
         <table border="black">
