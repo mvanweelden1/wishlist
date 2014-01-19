@@ -63,6 +63,15 @@ class WishDB extends mysqli {
         $this->query("INSERT INTO wishers (name, password) VALUES ('" . $name . "', '" . $password . "')");
     }
 
+    public function verify_wisher_credentials($name, $password) {
+        $name = $this->real_escape_string($name);
+
+        $password = $this->real_escape_string($password);
+        $result = $this->query("SELECT 1 FROM wishers
+ 	           WHERE name = '" . $name . "' AND password = '" . $password . "'");
+        return $result->data_seek(0);
+    }
+
 }
 
 ?>
